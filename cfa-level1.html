@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CFA Level I — Practice</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f7f7;--surface:#fff;--border:#e4e4e4;
+  --text:#111;--muted:#888;--pill:#efefef;
+  --correct:#16a34a;--wrong:#dc2626;
+  --correct-bg:#f0fdf4;--wrong-bg:#fef2f2;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px}
+.header-inner{max-width:740px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:52px}
+.logo{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.logo span{color:var(--muted);font-weight:400}
+nav{display:flex;gap:2px}
+.nav-btn{padding:6px 14px;border-radius:6px;border:none;background:none;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:.15s;position:relative}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{background:var(--pill);color:var(--text)}
+.badge{position:absolute;top:3px;right:4px;min-width:16px;height:16px;border-radius:8px;background:var(--wrong);color:#fff;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 3px}
+.badge.show{display:flex}
+.stats-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px}
+.stats-inner{max-width:740px;margin:0 auto;display:flex;gap:28px}
+.stat{text-align:center}
+.stat-val{font-size:18px;font-weight:700;line-height:1}
+.stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+.stat-val.c{color:var(--correct)}.stat-val.w{color:var(--wrong)}.stat-val.s{color:#f59e0b}
+.topics-row{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;overflow-x:auto;scrollbar-width:none}
+.topics-row::-webkit-scrollbar{display:none}
+.topics-inner{display:flex;gap:6px;max-width:740px;margin:0 auto}
+.pill{white-space:nowrap;padding:5px 13px;border-radius:20px;font-size:12px;font-weight:500;background:var(--pill);color:var(--muted);cursor:pointer;border:1px solid transparent;transition:.15s;user-select:none}
+.pill:hover{color:var(--text)}
+.pill.active{background:var(--text);color:#fff}
+.main{flex:1;padding:28px 20px;display:flex;justify-content:center;align-items:flex-start}
+.view{display:none;width:100%;max-width:740px}
+.view.active{display:block}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.card-top{padding:18px 22px 0;display:flex;justify-content:space-between;align-items:center}
+.q-topic{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.q-counter{font-size:12px;color:var(--muted)}
+.prog-wrap{padding:10px 22px 0}
+.prog-bg{height:2px;background:var(--pill);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--text);border-radius:2px;transition:width .3s}
+.q-body{padding:24px 22px 18px;font-size:15px;line-height:1.65}
+.options{padding:0 22px 22px;display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:.15s;user-select:none}
+.opt:hover:not(.locked){border-color:#bbb;background:#fafafa}
+.opt-letter{font-size:11px;font-weight:700;color:var(--muted);min-width:16px;margin-top:1px;flex-shrink:0}
+.opt-text{font-size:14px;line-height:1.5}
+.opt.chosen{border-color:var(--text);background:#f5f5f5}
+.opt.hit{border-color:var(--correct)!important;background:var(--correct-bg)!important}
+.opt.hit .opt-letter{color:var(--correct)}
+.opt.miss{border-color:var(--wrong)!important;background:var(--wrong-bg)!important}
+.opt.miss .opt-letter{color:var(--wrong)}
+.opt.locked{cursor:default}
+.expl{margin:0 22px 18px;padding:14px 16px;background:#f8f8f8;border-radius:8px;font-size:13px;line-height:1.6;color:#444;display:none}
+.expl.show{display:block}
+.expl strong{color:var(--text)}
+.card-foot{border-top:1px solid var(--border);padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
+.btn{padding:9px 18px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text);transition:.15s}
+.btn:hover:not(:disabled){background:var(--pill)}
+.btn:disabled{opacity:.35;cursor:default}
+.btn-p{background:var(--text);color:#fff;border-color:var(--text)}
+.btn-p:hover:not(:disabled){opacity:.82}
+.tag-diff{font-size:11px;padding:3px 9px;background:var(--pill);border-radius:12px}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:52px 32px;text-align:center}
+.result-score{font-size:64px;font-weight:800;letter-spacing:-2px;line-height:1}
+.result-sub{font-size:14px;color:var(--muted);margin-top:8px}
+.result-verdict{display:inline-block;margin-top:16px;padding:6px 18px;border-radius:20px;font-size:13px;font-weight:600}
+.verdict-pass{background:var(--correct-bg);color:var(--correct)}
+.verdict-fail{background:var(--wrong-bg);color:var(--wrong)}
+.result-actions{display:flex;gap:10px;justify-content:center;margin-top:28px}
+.review-header{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.review-title{font-size:16px;font-weight:600}
+.review-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.review-empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.review-empty-icon{font-size:40px;margin-bottom:12px}
+.review-empty h3{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px}
+.tracker-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.tracker-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.tc-val{font-size:28px;font-weight:700;line-height:1}
+.tc-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+.tc-val.streak{color:#f59e0b}
+.cal-wrap{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin-bottom:16px}
+.cal-title{font-size:13px;font-weight:600;margin-bottom:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.cal-grid{display:flex;flex-wrap:wrap;gap:4px}
+.cal-day{width:22px;height:22px;border-radius:4px;background:var(--pill)}
+.cal-day[data-level="1"]{background:#bbf7d0}
+.cal-day[data-level="2"]{background:#4ade80}
+.cal-day[data-level="3"]{background:#16a34a}
+.hist-list{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.hist-row{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);font-size:13px}
+.hist-row:last-child{border-bottom:none}
+.hist-date{color:var(--muted)}
+.hist-right{display:flex;gap:16px}
+.hist-c{color:var(--correct);font-weight:600}
+.hist-w{color:var(--wrong);font-weight:600}
+.source-tag{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.src-mock{background:#dbeafe;color:#1d4ed8}
+.src-bank{background:#f3e8ff;color:#7c3aed}
+@media(max-width:480px){
+  .tracker-grid{grid-template-columns:1fr 1fr}
+  .stats-inner{gap:16px}
+  .q-body{padding:18px 16px 14px;font-size:14px}
+  .options,.card-top,.prog-wrap,.expl,.card-foot{padding-left:16px;padding-right:16px}
+  nav .nav-btn{padding:6px 10px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo">CFA Level I <span>Practice</span></div>
+    <nav>
+      <button class="nav-btn active" onclick="switchView('quiz')">Practice</button>
+      <button class="nav-btn" onclick="switchView('review')" id="reviewTab">
+        Review <span class="badge" id="wrongBadge"></span>
+      </button>
+      <button class="nav-btn" onclick="switchView('tracker')">Tracker</button>
+    </nav>
+  </div>
+</header>
+
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat"><div class="stat-val s" id="statStreak">0</div><div class="stat-label">Streak</div></div>
+    <div class="stat"><div class="stat-val" id="statToday">0</div><div class="stat-label">Today</div></div>
+    <div class="stat"><div class="stat-val c" id="statCorrect">0</div><div class="stat-label">Correct</div></div>
+    <div class="stat"><div class="stat-val w" id="statWrong">0</div><div class="stat-label">Wrong</div></div>
+    <div class="stat"><div class="stat-val" id="statAcc">—</div><div class="stat-label">Accuracy</div></div>
+  </div>
+</div>
+
+<div class="topics-row"><div class="topics-inner" id="topicsInner"></div></div>
+
+<div class="main">
+  <!-- PRACTICE -->
+  <div class="view active" id="viewQuiz">
+    <div class="card" id="quizCard">
+      <div class="card-top">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="q-topic" id="qTopic"></span>
+          <span class="source-tag" id="qSrc"></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="tag-diff" id="qDiff"></span>
+          <span class="q-counter" id="qCounter"></span>
+        </div>
+      </div>
+      <div class="prog-wrap"><div class="prog-bg"><div class="prog-fill" id="progFill"></div></div></div>
+      <div class="q-body" id="qBody"></div>
+      <div class="options" id="qOptions"></div>
+      <div class="expl" id="qExpl"></div>
+      <div class="card-foot">
+        <button class="btn" id="btnPrev" onclick="navQ(-1)">← Back</button>
+        <button class="btn btn-p" id="btnNext" onclick="navQ(1)">Next →</button>
+      </div>
+    </div>
+    <div class="result-card" id="resultCard" style="display:none">
+      <div class="result-score" id="resScore"></div>
+      <div class="result-sub" id="resSub"></div>
+      <div class="result-verdict" id="resVerdict"></div>
+      <div class="result-actions">
+        <button class="btn" onclick="restartQuiz()">Try Again</button>
+        <button class="btn btn-p" onclick="switchView('review')">Review Wrong →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVIEW -->
+  <div class="view" id="viewReview">
+    <div class="review-header">
+      <div>
+        <div class="review-title">Wrong Answer Review</div>
+        <div class="review-sub" id="revSub">Review and re-answer incorrectly answered questions</div>
+      </div>
+      <div style="font-size:13px;font-weight:600" id="revProg"></div>
+    </div>
+    <div id="revContent"></div>
+  </div>
+
+  <!-- TRACKER -->
+  <div class="view" id="viewTracker">
+    <div class="tracker-grid">
+      <div class="tracker-card"><div class="tc-val streak" id="tcStreak">0</div><div class="tc-label">Day Streak 🔥</div></div>
+      <div class="tracker-card"><div class="tc-val" id="tcTotal">0</div><div class="tc-label">Total Answered</div></div>
+      <div class="tracker-card"><div class="tc-val" id="tcMastered">0</div><div class="tc-label">Mastered</div></div>
+    </div>
+    <div class="cal-wrap">
+      <div class="cal-title">Last 60 Days</div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <div class="hist-list" id="histList"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  QUESTION BANK
+//  src: "mock" = from your PDF exam
+//  src: "bank" = additional practice questions
+// ══════════════════════════════════════════════
+const QUESTIONS = [
+
+// ── MOCK EXAM (50 questions from PDF) ──────────────────────────
+
+// Ethics (Q1-8)
+{t:"Ethics",src:"mock",d:"Medium",
+ q:"During a private meeting, the CFO of a public company tells an analyst about a merger that has not yet been announced. The most appropriate action for the analyst is to:",
+ o:["Trade on the information only for the firm's proprietary accounts, not client accounts.",
+    "Wait 24 hours before trading to allow the market time to absorb the information.",
+    "Encourage the company to publicly disseminate the information and refrain from acting on it."],
+ a:2,
+ e:"Standard II(A) — Material Nonpublic Information: analysts must never act on MNPI and should encourage the company to make a public announcement. Trading — even after a delay — violates the Standard."},
+
+{t:"Ethics",src:"mock",d:"Medium",
+ q:"A long-standing client offers an analyst an all-expenses-paid vacation as a reward for the strong performance of her account over the past year. Under the Standards, the analyst may accept the gift if she:",
+ o:["Limits the value of the trip to USD 100.",
+    "Discloses the gift to her employer.",
+    "Declines, because gifts from clients are always prohibited."],
+ a:1,
+ e:"Gifts from clients for past performance are permissible under Standard I(B) provided the analyst discloses the gift to her employer. There is no specific dollar cap, and the prohibition applies to gifts that could impair future independence — this gift rewards past work."},
+
+{t:"Ethics",src:"mock",d:"Medium",
+ q:"An analyst is invited to visit the remote mining operations of a company he covers. The issuer offers to pay for a chartered flight since no commercial flights are available. To best comply with the Standard on Independence and Objectivity, the analyst should:",
+ o:["Pay for his own commercial transportation and lodging where possible.",
+    "Accept the chartered flight only if he issues a negative report afterward.",
+    "Accept the offer, because site visits are always exempt from the Standard."],
+ a:0,
+ e:"Standard I(B) requires analysts to pay their own way whenever possible to preserve independence. The chartered flight (sole means of access) may be acceptable, but the analyst should minimise issuer-paid travel where alternatives exist."},
+
+{t:"Ethics",src:"mock",d:"Medium",
+ q:"An investment adviser tells a prospective client: 'Based on the fund's performance over the last five years, you will earn at least 15% next year in our small-cap fund.' The adviser has most likely violated the Standard relating to:",
+ o:["Fair Dealing.",
+    "Misrepresentation.",
+    "Suitability."],
+ a:1,
+ e:"Guaranteeing a specific future return violates Standard I(C) — Misrepresentation, which prohibits making false or misleading statements about investment returns. Past performance does not guarantee future results."},
+
+{t:"Ethics",src:"mock",d:"Medium",
+ q:"The Standard on Fair Dealing most likely requires members and candidates to:",
+ o:["Communicate recommendations to all clients at exactly the same moment.",
+    "Execute trades for premium fee-paying clients before other clients.",
+    "Disseminate recommendations in a manner that gives all clients a fair opportunity to act."],
+ a:2,
+ e:"Standard III(B) requires fair — not necessarily simultaneous — distribution of recommendations. All clients must have a fair opportunity to act on changes. Preferential treatment for higher-fee clients is prohibited."},
+
+{t:"Ethics",src:"mock",d:"Medium",
+ q:"Under the Standard 'Priority of Transactions,' personal trades of a member should be executed:",
+ o:["After transactions for clients and the employer.",
+    "Simultaneously with client transactions.",
+    "Before employer transactions but after client transactions."],
+ a:0,
+ e:"Standard VI(B) establishes the priority order: client transactions first, employer transactions second, personal transactions last. Members must never front-run clients."},
+
+{t:"Ethics",src:"mock",d:"Easy",
+ q:"In the absence of regulatory guidance, CFA Institute recommends that records supporting investment analysis and recommendations be retained for a minimum of:",
+ o:["Five years.",
+    "Seven years.",
+    "Ten years."],
+ a:1,
+ e:"Standard V(C) — Record Retention recommends a seven-year minimum retention period for records when no regulatory requirement specifies otherwise."},
+
+{t:"Ethics",src:"mock",d:"Medium",
+ q:"With respect to claiming compliance with the GIPS standards, which statement is most accurate?",
+ o:["Compliance must be met on a firm-wide basis and cannot be claimed for selected composites only.",
+    "A firm may claim partial compliance if it identifies the non-compliant areas.",
+    "Individual portfolio managers may claim GIPS compliance for the accounts they manage."],
+ a:0,
+ e:"GIPS compliance is firm-wide — a firm either complies or it does not. Partial compliance claims are not permitted, and individual managers cannot claim GIPS compliance independent of the firm."},
+
+// Quantitative Methods (Q9-13)
+{t:"Quant",src:"mock",d:"Easy",
+ q:"A deposit pays a stated annual rate of 8% compounded quarterly. The effective annual rate is closest to:",
+ o:["8.00%","8.16%","8.24%"],
+ a:2,
+ e:"EAR = (1 + 0.08/4)^4 − 1 = (1.02)^4 − 1 = 1.0824 − 1 = 8.24%."},
+
+{t:"Quant",src:"mock",d:"Medium",
+ q:"An investor deposits $2,000 at the end of each year for 5 years into an account earning 6% per year. The value of the account at the end of Year 5 is closest to:",
+ o:["$11,274","$11,951","$10,606"],
+ a:0,
+ e:"FV of ordinary annuity = 2,000 × [(1.06^5 − 1)/0.06] = 2,000 × 5.6371 = $11,274."},
+
+{t:"Quant",src:"mock",d:"Easy",
+ q:"A portfolio has a mean annual return of 10% and a standard deviation of returns of 4%. The coefficient of variation is closest to:",
+ o:["2.50","0.40","0.25"],
+ a:1,
+ e:"CV = Standard Deviation / Mean = 4% / 10% = 0.40. CV measures risk per unit of return."},
+
+{t:"Quant",src:"mock",d:"Easy",
+ q:"If P(A | B) = 0.60 and P(B) = 0.50, the joint probability P(A and B) is closest to:",
+ o:["0.83","1.10","0.30"],
+ a:2,
+ e:"P(A and B) = P(A|B) × P(B) = 0.60 × 0.50 = 0.30. This is the multiplication rule of probability."},
+
+{t:"Quant",src:"mock",d:"Medium",
+ q:"For a negatively skewed unimodal distribution, the most likely ordering is:",
+ o:["Mean < median < mode.",
+    "Mode < median < mean.",
+    "Median < mean < mode."],
+ a:0,
+ e:"Negative (left) skew: the long tail is to the left, pulling the mean below the median. Order: mean < median < mode. Positive skew reverses this."},
+
+// Economics (Q14-17)
+{t:"Economics",src:"mock",d:"Easy",
+ q:"Demand for a good is price elastic. If the seller increases the price, total revenue will most likely:",
+ o:["Increase.","Remain unchanged.","Decrease."],
+ a:2,
+ e:"When |price elasticity| > 1, a price increase causes a proportionally larger decline in quantity demanded, so total revenue falls. TR = P × Q; elastic: Q falls more than P rises."},
+
+{t:"Economics",src:"mock",d:"Easy",
+ q:"In long-run equilibrium, a firm operating under perfect competition most likely earns economic profit that is:",
+ o:["Positive.","Zero.","Negative."],
+ a:1,
+ e:"Free entry and exit in perfect competition drive economic profit to zero in the long run. Firms earn only a normal return — P = min ATC."},
+
+{t:"Economics",src:"mock",d:"Medium",
+ q:"To implement a contractionary monetary policy through open market operations, a central bank most likely:",
+ o:["Sells government securities.",
+    "Buys government securities.",
+    "Lowers the policy rate."],
+ a:0,
+ e:"Selling securities drains bank reserves, reducing money supply and increasing interest rates — contractionary. Buying securities is expansionary."},
+
+{t:"Economics",src:"mock",d:"Easy",
+ q:"An economy reports nominal GDP of $22 trillion and real GDP of $20 trillion. The GDP deflator is closest to:",
+ o:["90.9","100.0","110.0"],
+ a:2,
+ e:"GDP deflator = (Nominal GDP / Real GDP) × 100 = (22/20) × 100 = 110. A deflator above 100 indicates prices rose relative to the base year."},
+
+// Financial Statement Analysis (Q18-25)
+{t:"FSA",src:"mock",d:"Medium",
+ q:"During a period of rising prices and stable inventory quantities, compared with FIFO, a company using LIFO will most likely report:",
+ o:["Higher net income.",
+    "Higher cost of goods sold.",
+    "Higher ending inventory."],
+ a:1,
+ e:"Under LIFO with rising prices, the most recently purchased (more expensive) units are expensed first → higher COGS, lower net income, and lower ending inventory compared to FIFO."},
+
+{t:"FSA",src:"mock",d:"Easy",
+ q:"A company reports net income of $1,000,000 and preferred dividends of $100,000. Weighted average common shares outstanding are 300,000. Basic EPS is closest to:",
+ o:["$3.33","$3.00","$2.75"],
+ a:1,
+ e:"Basic EPS = (Net Income − Preferred Dividends) / Weighted Average Shares = (1,000,000 − 100,000) / 300,000 = 900,000 / 300,000 = $3.00."},
+
+{t:"FSA",src:"mock",d:"Medium",
+ q:"Under IFRS, interest paid may be classified on the statement of cash flows as:",
+ o:["Either an operating or a financing activity.",
+    "An operating activity only.",
+    "A financing activity only."],
+ a:0,
+ e:"IFRS allows interest paid to be classified as either operating or financing activities (management's choice, disclosed consistently). Under US GAAP, interest paid is always operating."},
+
+{t:"FSA",src:"mock",d:"Hard",
+ q:"A company uses accelerated depreciation for tax purposes and straight-line depreciation for financial reporting. In the early years of an asset's life, this most likely gives rise to a:",
+ o:["Deferred tax asset.",
+    "Permanent difference with no deferred tax effect.",
+    "Deferred tax liability."],
+ a:2,
+ e:"Accelerated tax depreciation > straight-line book depreciation → taxable income < accounting income → taxes payable < tax expense → deferred tax liability (DTL). The DTL reverses in later years."},
+
+{t:"FSA",src:"mock",d:"Medium",
+ q:"Reversal of a prior-period inventory write-down (up to the amount of the original write-down) is:",
+ o:["Permitted under IFRS but prohibited under US GAAP.",
+    "Permitted under both IFRS and US GAAP.",
+    "Prohibited under both IFRS and US GAAP."],
+ a:0,
+ e:"IFRS (IAS 2) permits inventory write-down reversals if market value recovers, up to the original write-down amount. US GAAP prohibits reversals — inventory write-downs are permanent."},
+
+{t:"FSA",src:"mock",d:"Medium",
+ q:"At lease commencement, a lessee in a finance lease most likely recognizes:",
+ o:["Only a rent expense as payments are made.",
+    "A right-of-use asset and a lease liability.",
+    "The leased asset at fair value with a corresponding gain."],
+ a:1,
+ e:"Under both IFRS 16 and US GAAP ASC 842, finance (capital) leases are recognized on the balance sheet as a right-of-use (ROU) asset and a corresponding lease liability at lease commencement."},
+
+{t:"FSA",src:"mock",d:"Hard",
+ q:"A persistently high accruals ratio most likely indicates that a company's earnings quality is:",
+ o:["Higher, because accruals reflect conservative accounting.",
+    "Unaffected, because accruals always reverse.",
+    "Lower, because a larger portion of earnings is not backed by cash flow."],
+ a:2,
+ e:"A high accruals ratio signals that a large proportion of earnings consists of non-cash accruals rather than cash flows, which is a red flag for earnings quality. Accruals are more susceptible to manipulation than cash flows."},
+
+{t:"FSA",src:"mock",d:"Medium",
+ q:"A company with a current ratio of 1.5 uses cash to pay down accounts payable. Immediately after the transaction, the current ratio will most likely:",
+ o:["Increase.","Decrease.","Remain unchanged."],
+ a:0,
+ e:"When CR > 1, paying down a current liability with cash reduces both current assets and current liabilities by equal amounts, but this raises the ratio. Example: CA=150, CL=100 → CR=1.5. Pay $10: CA=140, CL=90 → CR=1.56."},
+
+// Corporate Issuers (Q26-29)
+{t:"Corporate",src:"mock",d:"Medium",
+ q:"When ranking two mutually exclusive projects, NPV and IRR give conflicting signals. The company should most appropriately select the project with the:",
+ o:["Higher IRR.","Higher NPV.","Shorter payback period."],
+ a:1,
+ e:"When NPV and IRR conflict for mutually exclusive projects, NPV is the superior criterion because it directly measures the increase in shareholder wealth. IRR can produce misleading rankings due to scale differences or non-conventional cash flows."},
+
+{t:"Corporate",src:"mock",d:"Medium",
+ q:"A firm is financed 60% with equity and 40% with debt. The cost of equity is 10%, the before-tax cost of debt is 5%, and the marginal tax rate is 25%. The WACC is closest to:",
+ o:["8.0%","7.0%","7.5%"],
+ a:2,
+ e:"WACC = wd×kd×(1−t) + we×ke = 0.40×5%×0.75 + 0.60×10% = 1.5% + 6.0% = 7.5%."},
+
+{t:"Corporate",src:"mock",d:"Medium",
+ q:"A company's operating cycle is best described as:",
+ o:["Days of inventory on hand + days sales outstanding − days payables outstanding.",
+    "Days sales outstanding + days payables outstanding.",
+    "Days of inventory on hand + days sales outstanding."],
+ a:2,
+ e:"Operating cycle = Days of Inventory on Hand (DOH) + Days Sales Outstanding (DSO). Subtracting days payables outstanding (DPO) gives the cash conversion cycle (CCC), which is shorter than the operating cycle."},
+
+{t:"Corporate",src:"mock",d:"Hard",
+ q:"A company repurchases shares using surplus cash that was earning an after-tax yield lower than the company's earnings yield (E/P). All else equal, EPS will most likely:",
+ o:["Increase.","Decrease.","Remain unchanged."],
+ a:0,
+ e:"If the earnings yield (E/P) exceeds the after-tax yield on cash, the repurchase is EPS-accretive: the return on earnings deployed into buybacks exceeds the foregone yield on cash. Fewer shares outstanding + maintained earnings = higher EPS."},
+
+// Equity (Q30-35)
+{t:"Equity",src:"mock",d:"Easy",
+ q:"A stock is expected to pay a dividend of $2.00 next year. The required return is 10% and the dividend growth rate is a constant 4%. Using the Gordon growth model, the stock's value is closest to:",
+ o:["$20.00","$33.33","$50.00"],
+ a:1,
+ e:"Gordon Growth Model: V = D1 / (r − g) = 2.00 / (0.10 − 0.04) = 2.00 / 0.06 = $33.33."},
+
+{t:"Equity",src:"mock",d:"Medium",
+ q:"A company has a dividend payout ratio of 40%, a required return on equity of 10%, and expected constant growth of 5%. The justified forward P/E is closest to:",
+ o:["8.0","4.0","12.0"],
+ a:0,
+ e:"Justified leading P/E = Payout ratio / (r − g) = 0.40 / (0.10 − 0.05) = 0.40 / 0.05 = 8.0×."},
+
+{t:"Equity",src:"mock",d:"Easy",
+ q:"If a market is weak-form efficient, which of the following is most likely unable to consistently generate abnormal returns?",
+ o:["Analysis of insider (material nonpublic) information.",
+    "Fundamental analysis of public financial statements.",
+    "Technical analysis based on historical prices and volume."],
+ a:2,
+ e:"Weak-form efficiency: all past price and volume data is reflected in current prices. Therefore, technical analysis cannot consistently earn abnormal returns. Insider information and fundamental analysis may still work under weak-form efficiency."},
+
+{t:"Equity",src:"mock",d:"Easy",
+ q:"A preferred stock pays a fixed annual dividend of $5.00 in perpetuity. If the required return is 8%, the value of the preferred stock is closest to:",
+ o:["$50.00","$62.50","$80.00"],
+ a:1,
+ e:"Value of perpetuity = D / r = $5.00 / 0.08 = $62.50."},
+
+{t:"Equity",src:"mock",d:"Hard",
+ q:"An investor buys a stock on margin at $40 per share with an initial margin of 50% and a maintenance margin of 25%. The price below which the investor receives a margin call is closest to:",
+ o:["$26.67","$30.00","$20.00"],
+ a:0,
+ e:"Margin call price = Purchase price × (1 − Initial margin) / (1 − Maintenance margin) = $40 × (1 − 0.50) / (1 − 0.25) = $40 × 0.50 / 0.75 = $26.67."},
+
+{t:"Equity",src:"mock",d:"Medium",
+ q:"The free-float methodology used in index construction weights companies based on:",
+ o:["Total shares outstanding, including government and insider holdings.",
+    "Fundamental measures such as sales and book value.",
+    "The market value of shares available to public investors."],
+ a:2,
+ e:"Free-float methodology excludes shares held by governments, insiders, or strategic investors (not freely tradeable) from the index weight calculation. Only publicly available shares are counted."},
+
+// Fixed Income (Q36-41)
+{t:"Fixed Income",src:"mock",d:"Easy",
+ q:"A bond has a modified duration of 6.0. If its yield increases by 50 basis points, the approximate percentage price change is closest to:",
+ o:["-6.0%","-3.0%","+3.0%"],
+ a:1,
+ e:"ΔP/P ≈ −Modified Duration × Δy = −6.0 × 0.005 = −0.030 = −3.0%. Duration is a linear approximation; convexity would slightly reduce the magnitude of the decline."},
+
+{t:"Fixed Income",src:"mock",d:"Medium",
+ q:"The Macaulay duration of a 10-year zero-coupon bond is closest to:",
+ o:["10 years.",
+    "5 years.",
+    "Slightly less than 10 years, depending on the yield."],
+ a:0,
+ e:"A zero-coupon bond has a single cash flow at maturity, so its Macaulay duration exactly equals its time to maturity: 10 years. This is not affected by yield level."},
+
+{t:"Fixed Income",src:"mock",d:"Easy",
+ q:"A bond with a 6% annual coupon and $1,000 par value trades at $950. Its current yield is closest to:",
+ o:["6.00%","6.32%","6.67%"],
+ a:1,
+ e:"Current yield = Annual Coupon / Market Price = $60 / $950 = 6.32%. Current yield ignores capital gains and time value; YTM is a more complete measure."},
+
+{t:"Fixed Income",src:"mock",d:"Medium",
+ q:"The value of a callable bond is best described as the value of an otherwise identical straight bond:",
+ o:["Plus the value of the embedded call option.",
+    "Plus the value of an embedded put option.",
+    "Minus the value of the embedded call option."],
+ a:2,
+ e:"Callable bond value = Straight bond value − Call option value. The issuer holds the call option (benefits the issuer), so investors pay less for the callable bond. As rates fall and the call becomes valuable to the issuer, the bond's price is capped."},
+
+{t:"Fixed Income",src:"mock",d:"Medium",
+ q:"Immediately after a coupon reset date, the price of a floating-rate note with no change in credit quality will most likely trade:",
+ o:["Close to par value.",
+    "At a significant discount to par.",
+    "At a significant premium to par."],
+ a:0,
+ e:"A floating-rate note resets its coupon to the current market rate on each reset date, so the present value of future cash flows equals par immediately after a reset (assuming no credit spread changes). The price reverts to par."},
+
+{t:"Fixed Income",src:"mock",d:"Easy",
+ q:"Government bond yields are unchanged, but corporate credit spreads widen. The prices of corporate bonds will most likely:",
+ o:["Rise.","Remain unchanged.","Fall."],
+ a:2,
+ e:"Corporate bond yield = Risk-free rate + Credit spread. If spreads widen (credit spread increases) while risk-free rates hold steady, corporate yields rise and prices fall (inverse relationship)."},
+
+// Derivatives (Q42-44)
+{t:"Derivatives",src:"mock",d:"Medium",
+ q:"At initiation, the value of a forward contract to both parties is most likely:",
+ o:["Equal to the forward price.",
+    "Zero.",
+    "Equal to the spot price minus the present value of the forward price."],
+ a:1,
+ e:"Forward contracts are priced at initiation so that no money changes hands — the forward price is set to make the contract's initial value zero to both parties. Value changes as spot prices and rates move over the contract's life."},
+
+{t:"Derivatives",src:"mock",d:"Easy",
+ q:"The maximum loss for the buyer of a call option is:",
+ o:["The premium paid.",
+    "The strike price minus the premium.",
+    "Unlimited."],
+ a:0,
+ e:"A call buyer's maximum loss is limited to the premium paid. If the option expires worthless (spot < strike), the buyer loses only the upfront premium."},
+
+{t:"Derivatives",src:"mock",d:"Hard",
+ q:"According to put–call parity for European options, the value of a put is best expressed as:",
+ o:["p = c + S − PV(X).",
+    "p = c + PV(X) − S.",
+    "p = c − PV(X) + S."],
+ a:1,
+ e:"Put-call parity: c + PV(X) = p + S → rearranging: p = c + PV(X) − S. This holds for European options on non-dividend-paying assets."},
+
+// Alternatives (Q45-47)
+{t:"Alternatives",src:"mock",d:"Easy",
+ q:"A commercial property generates annual net operating income of $300,000 and recently sold for $4,000,000. The implied capitalization rate is closest to:",
+ o:["13.3%","8.0%","7.5%"],
+ a:2,
+ e:"Cap Rate = NOI / Property Value = $300,000 / $4,000,000 = 0.075 = 7.5%. The cap rate is used to value real estate income properties."},
+
+{t:"Alternatives",src:"mock",d:"Medium",
+ q:"A 'high-water mark' in a hedge fund fee structure most likely ensures that:",
+ o:["Incentive fees are paid only on gains above the fund's previous peak value.",
+    "Management fees cannot exceed 2% of assets.",
+    "Investors receive a minimum guaranteed return before fees are charged."],
+ a:0,
+ e:"The high-water mark means the fund must first recover to its previous peak NAV before charging any new incentive fees. This protects investors from paying performance fees during recovery periods."},
+
+{t:"Alternatives",src:"mock",d:"Hard",
+ q:"A hedge fund with beginning capital of $100 million earns a 20% gross return. Fees are '2 and 20': a 2% management fee on end-of-period assets and a 20% incentive fee on gains net of the management fee. The investor's net return is closest to:",
+ o:["14.40%","14.08%","13.60%"],
+ a:1,
+ e:"End-of-period AUM (gross) = $120M. Management fee = 2% × $120M = $2.4M. Net gain after mgmt fee = $20M − $2.4M = $17.6M. Incentive fee = 20% × $17.6M = $3.52M. Net return = (120 − 2.4 − 3.52 − 100) / 100 = 14.08/100 = 14.08%."},
+
+// Portfolio Management (Q48-50)
+{t:"Portfolio",src:"mock",d:"Easy",
+ q:"Diversification across a large number of securities most likely reduces:",
+ o:["Systematic risk.",
+    "Both systematic and unsystematic risk equally.",
+    "Unsystematic risk."],
+ a:2,
+ e:"Diversification eliminates unsystematic (firm-specific/idiosyncratic) risk as company-specific shocks cancel out in a large portfolio. Systematic (market) risk cannot be diversified away — it affects all securities."},
+
+{t:"Portfolio",src:"mock",d:"Easy",
+ q:"The risk-free rate is 3%, a stock's beta is 1.2, and the expected market risk premium is 6%. Using the CAPM, the stock's required return is closest to:",
+ o:["10.2%","9.0%","13.8%"],
+ a:0,
+ e:"CAPM: E(R) = Rf + β × Market Risk Premium = 3% + 1.2 × 6% = 3% + 7.2% = 10.2%."},
+
+{t:"Portfolio",src:"mock",d:"Easy",
+ q:"A portfolio returns 12% with a standard deviation of 15%. The risk-free rate is 3%. The Sharpe ratio is closest to:",
+ o:["0.80","0.60","0.45"],
+ a:1,
+ e:"Sharpe Ratio = (Rp − Rf) / σp = (12% − 3%) / 15% = 9% / 15% = 0.60."},
+
+// ── PRACTICE BANK (additional questions) ───────────────────────
+
+{t:"Ethics",src:"bank",d:"Hard",
+ q:"A portfolio manager learns during a private meeting with a CFO that the company will report earnings 30% below consensus estimates next quarter. The manager does not trade on this information but shares it with two colleagues who then short the stock. The manager has MOST likely violated:",
+ o:["Standard II(A) — Material Nonpublic Information only.",
+    "Standard II(A) and Standard IV(C) — Responsibilities of Supervisors.",
+    "No standard, because the manager did not personally trade."],
+ a:0,
+ e:"The manager violated Standard II(A) by communicating (tipping) material nonpublic information, even without personally trading. Standard IV(C) applies only if the manager had supervisory authority over the colleagues — not stated here."},
+
+{t:"Ethics",src:"bank",d:"Hard",
+ q:"An analyst uses publicly available government data, SEC filings, and conversations with 15 industry suppliers to conclude that a company is likely to default within six months — a conclusion not publicly available. Trading on this conclusion is:",
+ o:["Prohibited — the analyst has created material nonpublic information through her research.",
+    "Permitted — this is consistent with the mosaic theory.",
+    "Prohibited — material information cannot be derived from non-company sources."],
+ a:1,
+ e:"The mosaic theory holds that combining non-material public information with non-material nonpublic information to reach an investment conclusion is permissible under Standard II(A). Each individual piece is neither material nor nonpublic."},
+
+{t:"Ethics",src:"bank",d:"Medium",
+ q:"A research analyst's report contains: 'The analyst and/or members of the analyst's household own shares in the company covered in this report.' This disclosure is MOST consistent with:",
+ o:["Standard V(B) — Communication with Clients.",
+    "Standard VI(A) — Disclosure of Conflicts.",
+    "Standard I(B) — Independence and Objectivity."],
+ a:1,
+ e:"Standard VI(A) requires members to disclose any matter that could impair their objectivity, including personal ownership of covered securities. This disclosure satisfies that requirement."},
+
+{t:"Quant",src:"bank",d:"Hard",
+ q:"A portfolio has monthly returns that are normally distributed with a mean of 1.2% and a standard deviation of 3.5%. The minimum monthly return expected to be exceeded in 95% of months (using z = 1.645) is closest to:",
+ o:["−4.56%","−3.30%","−2.10%"],
+ a:0,
+ e:"5th percentile threshold = μ − z×σ = 1.2% − 1.645×3.5% = 1.2% − 5.76% = −4.56%. The return will exceed this level 95% of months."},
+
+{t:"Quant",src:"bank",d:"Hard",
+ q:"An analyst runs a simple linear regression of stock returns on market returns and obtains an R² of 0.64. The correlation coefficient between the stock and the market is closest to:",
+ o:["0.40","0.64","0.80"],
+ a:2,
+ e:"In simple linear regression, R² = r². Therefore r = √0.64 = 0.80."},
+
+{t:"Quant",src:"bank",d:"Hard",
+ q:"A Type I error in hypothesis testing occurs when the analyst:",
+ o:["Fails to reject a false null hypothesis.",
+    "Rejects a true null hypothesis.",
+    "Sets the significance level too high."],
+ a:1,
+ e:"A Type I error (false positive) is rejecting a null hypothesis that is actually true. The probability of a Type I error equals the significance level α. A Type II error is failing to reject a false null."},
+
+{t:"Economics",src:"bank",d:"Hard",
+ q:"Country X pegs its currency to the USD. To defend the peg when domestic inflation exceeds US inflation, the central bank must MOST likely:",
+ o:["Raise interest rates and sell foreign exchange reserves.",
+    "Lower interest rates and buy foreign exchange reserves.",
+    "Raise interest rates and buy foreign exchange reserves."],
+ a:0,
+ e:"Higher domestic inflation weakens exports and the currency. To defend the peg, the central bank raises rates (to attract capital) and sells FX reserves (buying domestic currency), reducing money supply and fighting inflation."},
+
+{t:"Economics",src:"bank",d:"Medium",
+ q:"Under the quantity theory of money (MV = PQ), if money supply grows 5%, velocity is constant, and real GDP grows 2%, expected inflation is closest to:",
+ o:["5%","3%","2%"],
+ a:1,
+ e:"%ΔM + %ΔV = %ΔP + %ΔQ → 5% + 0 = %ΔP + 2% → Inflation = 3%."},
+
+{t:"FSA",src:"bank",d:"Hard",
+ q:"A firm has a debt-to-equity ratio of 2.0, net profit margin of 8%, and asset turnover of 1.5. Using the three-factor DuPont decomposition, its ROE is closest to:",
+ o:["16.0%","24.0%","36.0%"],
+ a:2,
+ e:"Equity multiplier = 1 + D/E = 1 + 2.0 = 3.0. ROE = Net Profit Margin × Asset Turnover × Equity Multiplier = 8% × 1.5 × 3.0 = 36%."},
+
+{t:"FSA",src:"bank",d:"Medium",
+ q:"A company has Revenue of $800M, COGS of $480M, SG&A of $120M, and Depreciation of $50M. EBITDA margin is closest to:",
+ o:["18.75%","25.0%","22.5%"],
+ a:1,
+ e:"EBIT = 800−480−120−50 = $150M. EBITDA = 150+50 = $200M. EBITDA margin = 200/800 = 25%."},
+
+{t:"FSA",src:"bank",d:"Medium",
+ q:"Under US GAAP, research and development costs are treated as follows:",
+ o:["Both are capitalized when criteria are met.",
+    "Research is expensed; development may be capitalized.",
+    "Both are expensed as incurred."],
+ a:2,
+ e:"Under US GAAP, both research and development costs must be expensed as incurred (with limited exceptions for software development). Under IFRS, development costs may be capitalized once feasibility is established."},
+
+{t:"Corporate",src:"bank",d:"Medium",
+ q:"A company's WACC is 10%. Project A has an IRR of 12% and a positive NPV. Project B has an IRR of 15% but a negative NPV at a 10% discount rate. Which project should the company accept?",
+ o:["Both projects, because both IRRs exceed the WACC.",
+    "Project A only, because it has a positive NPV.",
+    "Project B only, because it has the higher IRR."],
+ a:1,
+ e:"When NPV and IRR conflict, NPV is the correct criterion. Project B's negative NPV means it destroys value despite a high IRR (e.g., due to unconventional cash flows). Project A creates value and should be accepted."},
+
+{t:"Corporate",src:"bank",d:"Medium",
+ q:"A project requires an initial investment of $400,000 and generates after-tax cash flows of $120,000/year for 5 years. At a discount rate of 12%, the project's NPV is closest to:",
+ o:["$32,700","$20,000","−$33,300"],
+ a:0,
+ e:"PV of annuity = 120,000 × [(1−1.12^−5)/0.12] = 120,000 × 3.6048 = $432,574. NPV = 432,574 − 400,000 = $32,574 ≈ $32,700."},
+
+{t:"Equity",src:"bank",d:"Hard",
+ q:"A stock is expected to pay a dividend of $3.00 next year. Dividends grow at a constant 5% and the required return is 11%. The stock currently trades at $55. It is MOST likely:",
+ o:["Overvalued by approximately $5.",
+    "Fairly valued.",
+    "Undervalued by approximately $5."],
+ a:0,
+ e:"Gordon Growth Model: V = 3.00/(0.11−0.05) = $50.00. The stock trades at $55 → overvalued by $5."},
+
+{t:"Equity",src:"bank",d:"Hard",
+ q:"A company has the following: Net Income $120M, Depreciation $30M, CapEx $50M, Working Capital increase $10M, Net Debt Issued $15M. Free Cash Flow to Equity (FCFE) is closest to:",
+ o:["$90M","$105M","$115M"],
+ a:1,
+ e:"FCFE = NI + D&A − CapEx − ΔWCR + Net Borrowing = 120 + 30 − 50 − 10 + 15 = $105M."},
+
+{t:"Equity",src:"bank",d:"Medium",
+ q:"The sustainable growth rate of a firm with ROE of 15% and a dividend payout ratio of 40% is closest to:",
+ o:["9.0%","15.0%","6.0%"],
+ a:0,
+ e:"Sustainable growth rate g = ROE × retention ratio = 15% × (1 − 0.40) = 15% × 0.60 = 9.0%."},
+
+{t:"Fixed Income",src:"bank",d:"Hard",
+ q:"A portfolio manager holds a bond with modified duration of 6.5 and convexity of 65. If yields increase by 100 bps, the approximate percentage price change is closest to:",
+ o:["−6.18%","−6.50%","−5.85%"],
+ a:0,
+ e:"ΔP/P ≈ −Duration×Δy + ½×Convexity×(Δy)² = −6.5×0.01 + 0.5×65×0.01² = −0.065 + 0.00325 = −6.18%."},
+
+{t:"Fixed Income",src:"bank",d:"Medium",
+ q:"The Z-spread on a corporate bond is 180 bps and the OAS is 150 bps. This implies that:",
+ o:["The bond is a putable bond.",
+    "The bond has an embedded call option with a value of 30 bps.",
+    "The bond is undervalued by 30 bps."],
+ a:1,
+ e:"Option cost = Z-spread − OAS = 180 − 150 = 30 bps. A positive option cost (Z > OAS) indicates an embedded issuer option (call). For putable bonds, OAS > Z-spread (negative option cost)."},
+
+{t:"Fixed Income",src:"bank",d:"Medium",
+ q:"According to the expectations theory, if the current 1-year spot rate is 3% and the 2-year spot rate is 4%, the implied 1-year forward rate one year from now is closest to:",
+ o:["5.01%","4.00%","3.50%"],
+ a:0,
+ e:"(1.04)² = (1.03)(1+f) → 1.0816 / 1.03 = 1.0501 → f = 5.01%."},
+
+{t:"Derivatives",src:"bank",d:"Hard",
+ q:"A 6-month forward on a non-dividend-paying stock: S = $52, r = 6% continuously compounded. The no-arbitrage forward price is closest to:",
+ o:["$53.20","$53.58","$54.60"],
+ a:1,
+ e:"F = S × e^(rT) = 52 × e^(0.06×0.5) = 52 × 1.03045 = $53.58."},
+
+{t:"Derivatives",src:"bank",d:"Medium",
+ q:"A company with floating-rate debt enters into a pay-fixed, receive-floating interest rate swap. After the swap, the company effectively has:",
+ o:["Floating-rate exposure, unchanged.",
+    "Fixed-rate debt exposure.",
+    "Reduced credit risk on its debt."],
+ a:1,
+ e:"The company pays LIBOR on its debt and receives LIBOR on the swap, which offsets. It pays fixed on the swap. Net: fixed-rate exposure — the floating debt has been synthetically converted to fixed."},
+
+{t:"Derivatives",src:"bank",d:"Medium",
+ q:"A protective put strategy involves:",
+ o:["Selling a put against an existing long stock position.",
+    "Buying a put option against an existing long stock position.",
+    "Selling a call and holding cash as collateral."],
+ a:1,
+ e:"A protective put (portfolio insurance) = long stock + long put. The put provides a price floor (downside protection) while preserving unlimited upside. Cost = put premium paid."},
+
+{t:"Alternatives",src:"bank",d:"Medium",
+ q:"The J-curve in private equity refers to the tendency for:",
+ o:["Returns to accelerate as the fund nears its target exit.",
+    "Net cash flows to be negative in early years due to fees and capital calls, then positive as investments are exited.",
+    "Management fees to decline over the fund's life."],
+ a:1,
+ e:"The J-curve describes typical PE fund return pattern: early years show negative returns (management fees, unrealised investments), followed by positive returns as mature investments are exited. The shape traces the letter 'J.'"},
+
+{t:"Alternatives",src:"bank",d:"Hard",
+ q:"Commodity futures markets are in contango when:",
+ o:["Spot prices exceed futures prices.",
+    "Futures prices exceed spot prices, typically creating negative roll returns for long futures investors.",
+    "The futures curve is flat, indicating no convenience yield."],
+ a:1,
+ e:"Contango: futures prices > spot prices (upward-sloping forward curve). Rolling long positions in contango generates negative roll yield — selling expiring contracts below deferred contract prices."},
+
+{t:"Portfolio",src:"bank",d:"Hard",
+ q:"Portfolio X: return 12%, σ = 16%, beta = 0.9. Portfolio Y: return 16%, σ = 24%, beta = 1.4. Risk-free rate = 4%. Which portfolio has a higher Treynor ratio?",
+ o:["Portfolio X — Treynor ≈ 0.089.",
+    "Portfolio Y — Treynor ≈ 0.086.",
+    "Both are equal."],
+ a:0,
+ e:"Treynor X = (12−4)/0.9 = 8.89% ≈ 0.089. Treynor Y = (16−4)/1.4 = 8.57% ≈ 0.086. Portfolio X has the higher Treynor ratio."},
+
+{t:"Portfolio",src:"bank",d:"Hard",
+ q:"A stock has a beta of 1.3, the risk-free rate is 3%, and the expected market return is 9%. According to CAPM, the required return is closest to:",
+ o:["10.8%","12.3%","9.6%"],
+ a:0,
+ e:"CAPM: E(R) = Rf + β×[E(Rm)−Rf] = 3% + 1.3×(9%−3%) = 3% + 7.8% = 10.8%."},
+
+{t:"Portfolio",src:"bank",d:"Medium",
+ q:"Jensen's alpha for a portfolio is positive. This indicates that the portfolio:",
+ o:["Has a higher Sharpe ratio than the market.",
+    "Earned a return greater than predicted by CAPM given its beta.",
+    "Has a beta greater than 1.0."],
+ a:1,
+ e:"Jensen's alpha = Rp − [Rf + β(Rm−Rf)]. Positive alpha means the portfolio outperformed CAPM's prediction given its systematic risk. It does not imply a higher Sharpe ratio or a beta above 1."},
+
+{t:"Portfolio",src:"bank",d:"Medium",
+ q:"An investor's risk aversion coefficient is 3. A portfolio has an expected return of 12% and a standard deviation of 15%. The investor's utility score is closest to:",
+ o:["0.0863","0.1200","0.0538"],
+ a:0,
+ e:"Utility = E(R) − ½ × A × σ² = 0.12 − 0.5 × 3 × (0.15)² = 0.12 − 0.03375 = 0.08625 ≈ 0.0863."},
+
+];
+
+// ══════════════════════════════════════════════
+//  STORAGE
+// ══════════════════════════════════════════════
+const SK = { h:'cfa_hist_v3', w:'cfa_wrong_v3', m:'cfa_master_v3' };
+let history  = JSON.parse(localStorage.getItem(SK.h) || '{}');
+let wrongSet = new Set(JSON.parse(localStorage.getItem(SK.w) || '[]'));
+let masterSet= new Set(JSON.parse(localStorage.getItem(SK.m) || '[]'));
+function save(){
+  localStorage.setItem(SK.h, JSON.stringify(history));
+  localStorage.setItem(SK.w, JSON.stringify([...wrongSet]));
+  localStorage.setItem(SK.m, JSON.stringify([...masterSet]));
+}
+function todayKey(){ return new Date().toISOString().split('T')[0]; }
+function recordAnswer(ok){
+  const d=todayKey();
+  if(!history[d]) history[d]={answered:0,correct:0};
+  history[d].answered++;
+  if(ok) history[d].correct++;
+  save();
+}
+function getStreak(){
+  let n=0, d=new Date();
+  for(let i=0;i<365;i++){
+    const k=d.toISOString().split('T')[0];
+    if(history[k]&&history[k].answered>0){n++;d.setDate(d.getDate()-1);}
+    else break;
+  }
+  return n;
+}
+function getTotals(){
+  let a=0,c=0;
+  Object.values(history).forEach(v=>{a+=v.answered;c+=v.correct;});
+  return{a,c,w:a-c};
+}
+
+// ══════════════════════════════════════════════
+//  QUIZ STATE
+// ══════════════════════════════════════════════
+const TOPICS=['All','Mock Exam','Ethics','Quant','Economics','FSA','Corporate','Equity','Fixed Income','Derivatives','Alternatives','Portfolio'];
+let currentTopic='All', filtered=[], qi=0, quizAns={};
+
+function getFiltered(){
+  if(currentTopic==='All') return QUESTIONS;
+  if(currentTopic==='Mock Exam') return QUESTIONS.filter(q=>q.src==='mock');
+  return QUESTIONS.filter(q=>q.t===currentTopic);
+}
+
+// ══════════════════════════════════════════════
+//  REVIEW STATE
+// ══════════════════════════════════════════════
+let revQueue=[], revAns={}, revIdx=0;
+
+// ══════════════════════════════════════════════
+//  UI
+// ══════════════════════════════════════════════
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
+  document.getElementById('view'+v.charAt(0).toUpperCase()+v.slice(1)).classList.add('active');
+  event.currentTarget&&event.currentTarget.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    if((v==='quiz'&&b.textContent.includes('Practice'))||(v==='review'&&b.textContent.includes('Review'))||(v==='tracker'&&b.textContent.includes('Tracker')))
+      b.classList.add('active');
+  });
+  if(v==='review') renderReview();
+  if(v==='tracker') renderTracker();
+  updateStats();
+}
+
+function updateStats(){
+  const s=getStreak(), t=getTotals(), td=history[todayKey()]||{answered:0,correct:0};
+  document.getElementById('statStreak').textContent=s+(s>0?' 🔥':'');
+  document.getElementById('statToday').textContent=td.answered;
+  document.getElementById('statCorrect').textContent=t.c;
+  document.getElementById('statWrong').textContent=t.w;
+  document.getElementById('statAcc').textContent=t.a>0?Math.round(t.c/t.a*100)+'%':'—';
+  const b=document.getElementById('wrongBadge');
+  b.textContent=wrongSet.size;
+  b.classList.toggle('show',wrongSet.size>0);
+}
+
+function buildTopics(){
+  const el=document.getElementById('topicsInner');
+  el.innerHTML='';
+  TOPICS.forEach(t=>{
+    let count;
+    if(t==='All') count=QUESTIONS.length;
+    else if(t==='Mock Exam') count=QUESTIONS.filter(q=>q.src==='mock').length;
+    else count=QUESTIONS.filter(q=>q.t===t).length;
+    const p=document.createElement('div');
+    p.className='pill'+(t===currentTopic?' active':'');
+    p.textContent=t+' ('+count+')';
+    p.onclick=()=>{
+      currentTopic=t; quizAns={}; qi=0;
+      document.getElementById('resultCard').style.display='none';
+      document.getElementById('quizCard').style.display='';
+      buildTopics(); renderQuiz();
+    };
+    el.appendChild(p);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  QUIZ
+// ══════════════════════════════════════════════
+function renderQuiz(){
+  filtered=getFiltered();
+  const q=filtered[qi];
+  if(!q) return;
+  document.getElementById('qTopic').textContent=q.t;
+  const src=document.getElementById('qSrc');
+  src.textContent=q.src==='mock'?'Mock Exam':'Practice Bank';
+  src.className='source-tag '+(q.src==='mock'?'src-mock':'src-bank');
+  const diff=document.getElementById('qDiff');
+  diff.textContent=q.d;
+  diff.style.color=q.d==='Hard'?'#dc2626':q.d==='Medium'?'#d97706':'#16a34a';
+  document.getElementById('qCounter').textContent=(qi+1)+' / '+filtered.length;
+  document.getElementById('progFill').style.width=((qi+1)/filtered.length*100)+'%';
+  document.getElementById('qBody').textContent=q.q;
+
+  const chosen=quizAns[qi], revealed=chosen!==undefined;
+  const c=document.getElementById('qOptions');
+  c.innerHTML='';
+  q.o.forEach((opt,i)=>{
+    const d=document.createElement('div');
+    d.className='opt'+(revealed?' locked':'');
+    if(revealed){
+      if(i===q.a) d.className+=' hit';
+      else if(i===chosen) d.className+=' miss';
+    }
+    d.innerHTML=`<span class="opt-letter">${'ABCD'[i]}</span><span class="opt-text">${opt}</span>`;
+    if(!revealed) d.onclick=()=>chooseQ(i);
+    c.appendChild(d);
+  });
+
+  const ex=document.getElementById('qExpl');
+  if(revealed){ex.innerHTML='<strong>Explanation:</strong> '+q.e;ex.classList.add('show');}
+  else ex.classList.remove('show');
+  document.getElementById('btnPrev').disabled=qi===0;
+  document.getElementById('btnNext').textContent=(qi===filtered.length-1&&revealed)?'Finish ✓':'Next →';
+}
+
+function chooseQ(i){
+  const q=filtered[qi];
+  if(quizAns[qi]!==undefined) return;
+  quizAns[qi]=i;
+  const ok=i===q.a, gi=QUESTIONS.indexOf(q);
+  recordAnswer(ok);
+  if(!ok){wrongSet.add(gi);masterSet.delete(gi);}
+  else{masterSet.add(gi);}
+  save(); renderQuiz(); updateStats();
+}
+
+function navQ(dir){
+  if(dir===1&&qi===filtered.length-1&&quizAns[qi]!==undefined){showResult();return;}
+  qi=Math.max(0,Math.min(filtered.length-1,qi+dir));
+  renderQuiz();
+}
+
+function showResult(){
+  const ans=Object.keys(quizAns).length;
+  const cor=Object.values(quizAns).filter((_,i)=>filtered[i]&&_===filtered[i].a).length;
+  const pct=ans?Math.round(cor/ans*100):0;
+  document.getElementById('quizCard').style.display='none';
+  const rc=document.getElementById('resultCard');rc.style.display='';
+  document.getElementById('resScore').textContent=pct+'%';
+  document.getElementById('resSub').textContent=cor+' correct out of '+ans+' questions answered';
+  const v=document.getElementById('resVerdict');
+  if(pct>=70){v.textContent='✓ Pass';v.className='result-verdict verdict-pass';}
+  else{v.textContent='✗ Below passing threshold';v.className='result-verdict verdict-fail';}
+}
+
+function restartQuiz(){
+  quizAns={};qi=0;
+  document.getElementById('resultCard').style.display='none';
+  document.getElementById('quizCard').style.display='';
+  renderQuiz();
+}
+
+// ══════════════════════════════════════════════
+//  REVIEW (Quizlet-style)
+// ══════════════════════════════════════════════
+function renderReview(){
+  const rc=document.getElementById('revContent');
+  if(wrongSet.size===0){
+    rc.innerHTML=`<div class="review-empty"><div class="review-empty-icon">🎯</div><h3>No wrong answers yet</h3><p>Answer some questions in Practice mode — wrong answers will appear here for review.</p></div>`;
+    document.getElementById('revSub').textContent='Complete some practice questions first';
+    document.getElementById('revProg').textContent='';
+    return;
+  }
+  if(revQueue.length===0){
+    revQueue=[...wrongSet].map(i=>({q:QUESTIONS[i],gi:i})).filter(x=>x.q);
+    revAns={};revIdx=0;
+  }
+  const cleared=revQueue.filter((_,i)=>revAns[i]==='correct').length;
+  const allDone=revQueue.every((_,i)=>revAns[i]==='correct');
+  document.getElementById('revSub').textContent=wrongSet.size+' question'+(wrongSet.size>1?'s':'')+' in your review queue';
+  document.getElementById('revProg').textContent=cleared+' / '+revQueue.length+' cleared';
+
+  if(allDone){
+    rc.innerHTML=`<div class="review-empty"><div class="review-empty-icon">🏆</div><h3>All cleared!</h3><p>You correctly answered all ${revQueue.length} previously wrong questions.</p><button class="btn btn-p" style="margin-top:20px" onclick="resetReview()">Review Again</button></div>`;
+    wrongSet.clear();save();updateStats();return;
+  }
+
+  while(revAns[revIdx]==='correct') revIdx=(revIdx+1)%revQueue.length;
+  const {q,gi}=revQueue[revIdx];
+  const thisAns=revAns[revIdx], revealed=thisAns!==undefined;
+  const pct=Math.round(cleared/revQueue.length*100);
+
+  rc.innerHTML=`
+    <div class="card">
+      <div class="card-top">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="q-topic">${q.t}</span>
+          <span class="source-tag ${q.src==='mock'?'src-mock':'src-bank'}">${q.src==='mock'?'Mock Exam':'Practice Bank'}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="tag-diff" style="color:${q.d==='Hard'?'#dc2626':q.d==='Medium'?'#d97706':'#16a34a'}">${q.d}</span>
+          <span class="q-counter">${cleared}/${revQueue.length} cleared</span>
+        </div>
+      </div>
+      <div class="prog-wrap"><div class="prog-bg"><div class="prog-fill" style="width:${pct}%;background:#16a34a"></div></div></div>
+      <div class="q-body">${q.q}</div>
+      <div class="options" id="revOpts"></div>
+      <div class="expl${revealed?' show':''}" id="revExpl">${revealed?'<strong>Explanation:</strong> '+q.e:''}</div>
+      <div class="card-foot">
+        <div style="font-size:12px;color:var(--muted)">${wrongSet.size} question${wrongSet.size!==1?'s':''} in queue</div>
+        ${revealed?`<button class="btn btn-p" onclick="nextReview()">${thisAns==='correct'?'Next →':'Try Next →'}</button>`:''}
+      </div>
+    </div>`;
+
+  const opts=document.getElementById('revOpts');
+  q.o.forEach((opt,i)=>{
+    const d=document.createElement('div');
+    d.className='opt'+(revealed?' locked':'');
+    if(revealed){
+      if(i===q.a) d.className+=' hit';
+      else if(i===thisAns) d.className+=' miss';
+    }
+    d.innerHTML=`<span class="opt-letter">${'ABCD'[i]}</span><span class="opt-text">${opt}</span>`;
+    if(!revealed) d.onclick=()=>chooseRev(i);
+    opts.appendChild(d);
+  });
+}
+
+function chooseRev(i){
+  const {q,gi}=revQueue[revIdx];
+  const ok=i===q.a;
+  if(ok){revAns[revIdx]='correct';wrongSet.delete(gi);masterSet.add(gi);save();}
+  else{revAns[revIdx]=i;recordAnswer(false);}
+  updateStats();renderReview();
+}
+
+function nextReview(){
+  let n=0;
+  do{revIdx=(revIdx+1)%revQueue.length;n++;}
+  while(revAns[revIdx]==='correct'&&n<revQueue.length);
+  renderReview();
+}
+
+function resetReview(){
+  revQueue=[];revAns={};revIdx=0;renderReview();
+}
+
+// ══════════════════════════════════════════════
+//  TRACKER
+// ══════════════════════════════════════════════
+function renderTracker(){
+  const s=getStreak(), t=getTotals();
+  document.getElementById('tcStreak').textContent=s+(s>0?' 🔥':'');
+  document.getElementById('tcTotal').textContent=t.a;
+  document.getElementById('tcMastered').textContent=masterSet.size;
+
+  const cal=document.getElementById('calGrid');
+  cal.innerHTML='';
+  for(let i=59;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=d.toISOString().split('T')[0];
+    const v=history[k];
+    const cell=document.createElement('div');
+    cell.className='cal-day';
+    if(v&&v.answered>0) cell.setAttribute('data-level',v.answered>=20?3:v.answered>=10?2:1);
+    cell.title=k+(v&&v.answered>0?': '+v.correct+'/'+v.answered+' correct':': no activity');
+    cal.appendChild(cell);
+  }
+
+  const hl=document.getElementById('histList');
+  const entries=Object.entries(history).filter(([_,v])=>v.answered>0).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,14);
+  if(!entries.length){hl.innerHTML='<div class="hist-row" style="justify-content:center;color:var(--muted)">No activity yet — start practicing!</div>';return;}
+  hl.innerHTML=entries.map(([date,v])=>`<div class="hist-row"><span class="hist-date">${new Date(date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span><div class="hist-right"><span class="hist-c">✓ ${v.correct}</span><span class="hist-w">✗ ${v.answered-v.correct}</span><span style="color:var(--muted);font-size:12px">${Math.round(v.correct/v.answered*100)}%</span></div></div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+buildTopics();
+renderQuiz();
+updateStats();
+</script>
+</body>
+</html>
